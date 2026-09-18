@@ -1,0 +1,5 @@
+- Criar consumidor
+- Criar banco de dados
+- Fazer váriaveis poderem ser alteradas OU fazer funções do produtor que 
+aumentem ou diminuem a temperatura e vibração para que o consumidor cheque o erro
+- Criar .env

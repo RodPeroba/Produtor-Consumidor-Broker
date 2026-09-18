@@ -18,17 +18,13 @@ producer_thread = None
 def generate_and_send_message():
     contador = 0
     while True:
-        print("Antes do send", flush=True)
         message = {
                     "temperatura": temperature,
                     "vibracao": vibration
                     }
         producer.send(topic=topico, value=str(message).encode('utf-8'))
-        print("Depois do send", flush=True)
         producer.flush()
-        print("Depois do flush", flush=True)
         contador +=1
-        print("Mensagem enviada para o Kafka:", message , "Contador:", contador)
         time.sleep(time_interval)
     return 
 
