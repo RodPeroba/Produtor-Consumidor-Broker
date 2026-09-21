@@ -7,6 +7,18 @@ services:
       - kafka
     environment:
       KAFKA_BROKER: kafka:9092
+  consumer:
+    build: ./Code/Consumidor
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+          condition: service_healthy
+      kafka:
+        condition: service_started
+      
+    environment:
+      KAFKA_BROKER: kafka:9092
   kafka:
     image: apache/kafka:latest 
     ports: 
@@ -35,5 +47,20 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+  db:
+    image: mysql:8.4
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 volumes:
   kafka-data:
+  mysql_data:

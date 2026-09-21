@@ -1,11 +1,16 @@
-from flask import Flask
-from kafka import KafkaProducer
 import time
 import threading
+import json
+from flask import Flask
+from kafka import KafkaProducer
 
 app = Flask(__name__)
-producer = KafkaProducer(bootstrap_servers='kafka:9092')
-topico = 'dados-sensores'
+producer = KafkaProducer(
+    bootstrap_servers='kafka:9092',
+    value_serializer=lambda value: json.dumps(value).encode('utf-8')
+    )
+# TODO - Adicionar variáveis de ambiente para os valores de temperatura e vibração
+topic = 'dados-sensores'
 temperature = 25.0
 vibration = 0.5
 time_interval = 1
@@ -16,15 +21,11 @@ producer_thread = None
 '''
 
 def generate_and_send_message():
-    contador = 0
+
     while True:
-        message = {
-                    "temperatura": temperature,
-                    "vibracao": vibration
-                    }
-        producer.send(topic=topico, value=str(message).encode('utf-8'))
+        message = {"temperatura":temperature, "vibracao":vibration}
+        producer.send(topic=topic, value=message)
         producer.flush()
-        contador +=1
         time.sleep(time_interval)
     return 
 
@@ -40,7 +41,7 @@ def index():
 @app.route("/startproducer")
 def generate_data():
     global producer_thread
-    # Evita gerar mais de uma thread por produtor
+    # Evita gerar mais de uma thread por produtor, uso de thread só para o site funcionar
     if producer_thread is None or not producer_thread.is_alive():
         # Gera a mensagem em JSON e envia para o kafka, uso de threading pois a geração de mensagem é continua
         producer_thread = threading.Thread(target=generate_and_send_message)

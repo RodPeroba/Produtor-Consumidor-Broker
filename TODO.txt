@@ -1,5 +1,4 @@
-- Criar consumidor
-- Criar banco de dados
 - Fazer váriaveis poderem ser alteradas OU fazer funções do produtor que 
 aumentem ou diminuem a temperatura e vibração para que o consumidor cheque o erro
-- Criar .env
+- Unificar os .env
+- Aumentar o numero de produtores e consumidores e brokers
