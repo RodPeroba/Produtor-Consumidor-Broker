@@ -1,0 +1,21 @@
+# Permite acessar o url do flask
+kubectl port-forward service/producer 5000:5000 -n factory
+kubectl port-forward service/consumer 5001:5001 -n factory
+
+# Mostra o banco de dados
+kubectl exec deployment/mysql-deployment -n factory -- mysql -uuser -ppassword -D url_shortener -e "SELECT * FROM alerts;"
+
+# Mostra informações gerais dos pods
+kubectl get all -n factory
+
+# Descreve o pod
+kubectl describe pod NOME_DO_POD -n factory
+
+# Mostra logs do deployment/service
+kubectl logs -f deployment/consumer-deployment -n factory
+
+# Interface pelo terminal
+kubectl get pods -n factory -w
+
+# Encerra a execução do projeto
+kubectl delete namespace factory

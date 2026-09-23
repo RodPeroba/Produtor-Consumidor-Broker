@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-deployment
+  namespace: factory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+        - name: consumer
+          image: rodperoba/factory-consumer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - configMapRef:
+                name: factory-config
+            - secretRef:
+                name: factory-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer
+  namespace: factory
+spec:
+  type: NodePort
+  selector:
+    app: consumer
+  ports:
+    - port: 5001
+      targetPort: 5001

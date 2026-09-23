@@ -1,1 +1,4 @@
 Para que server a network
+Diferencças de pod e container
+    posso ter mais de um container no pod?
+Como fazer sem dar push pro dockerhub
