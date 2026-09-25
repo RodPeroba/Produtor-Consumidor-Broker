@@ -19,3 +19,9 @@ kubectl get pods -n factory -w
 
 # Encerra a execução do projeto
 kubectl delete namespace factory
+
+# Mudar quantidade de producers
+kubectl scale deployment producer-deployment --replicas=5 -n factory
+
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+

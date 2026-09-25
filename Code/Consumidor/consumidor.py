@@ -29,6 +29,13 @@ def connect_to_database():
     )
     return connection
 
+def analise_data(data_json):
+    if data_json['temperatura'] > temperature_max or data_json['temperatura'] < temperature_min:
+        app.logger.warning(f"Alerta de temperatura irregular, valor: {data_json['temperatura']}")
+    if data_json['vibracao'] > vibration_max or data_json['vibracao'] < vibration_min:
+        app.logger.warning(f"Alerta de vibração irregular, valor: {data_json['vibracao']}")
+    return data_json
+
 def create_table():
     connection = connect_to_database()
     cursor = connection.cursor()
@@ -54,13 +61,14 @@ def create_table():
     Caso algum valor esteja fora do limite, será impresso no console uma mensagem de alerta
 '''
 def consume_messages():
-    consumer = KafkaConsumer(topic, bootstrap_servers='kafka:9092')
+    consumer = KafkaConsumer(topic, bootstrap_servers='kafka:9092',group_id='factory-consumers')
     app.logger.info("Consumidor iniciado, aguardando mensagens...")
     connection = connect_to_database()
     cursor = connection.cursor()
     try:
         for message in consumer:
             dados = json.loads(message.value.decode('utf-8'))
+            dados = analise_data(dados)
             cursor.execute("INSERT INTO alerts (temperatura, vibracao) VALUES (%s, %s)", (dados['temperatura'], dados['vibracao']))
             connection.commit()
             # app.logger.info(f"Mensagem recebida: {message.value.decode('utf-8')}")
@@ -95,4 +103,5 @@ def start_consumer():
 
 if __name__ == "__main__":
     create_table()
+    start_consumer()
     app.run(host='0.0.0.0', port=5001, debug=True)

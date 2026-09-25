@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producerwitherror-deployment
+  namespace: factory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producerwitherror
+  template:
+    metadata:
+      labels:
+        app: producerwitherror
+    spec:
+      containers:
+        - name: producerwitherror
+          image: rodperoba/factory-producerwitherror:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: producerwitherror
+  namespace: factory
+spec:
+  type: NodePort
+  selector:
+    app: producerwitherror
+  ports:
+    - port: 5000
+      targetPort: 5000
